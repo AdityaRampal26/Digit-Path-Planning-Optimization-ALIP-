@@ -7,9 +7,9 @@ torques, so she cannot fall. That is the point: it isolates the planner, the
 trajectory generator and the IK, so any bug found later in the physics stage is
 genuinely a *controller* bug.
 
-Outputs out/walk_qpos.npy, which sim/play_walk.py and sim/render_skeleton.py read.
+Outputs out/walk_qpos.npy, which scripts/play_walk.py and scripts/render_skeleton.py read.
 
-Run:  python sim/alip_animate.py
+Run:  python scripts/alip_animate.py
 """
 
 from __future__ import annotations

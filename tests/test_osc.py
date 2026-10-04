@@ -20,7 +20,7 @@ import numpy as np
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
-sys.path.insert(0, str(ROOT / "sim"))
+sys.path.insert(0, str(ROOT / "scripts"))
 
 import digit_params as dp  # noqa: E402
 import digit_state as ds  # noqa: E402

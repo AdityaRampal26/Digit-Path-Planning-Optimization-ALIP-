@@ -13,7 +13,7 @@ The CoM target moves over the stance foot, which is a ~13 cm lateral shift from 
 nominal stance. The starting pose is built by homotopy through the IK rather than
 guessed.
 
-Run:  python sim/digit_one_leg.py [--seconds 3]
+Run:  python scripts/digit_one_leg.py [--seconds 3]
 """
 
 from __future__ import annotations

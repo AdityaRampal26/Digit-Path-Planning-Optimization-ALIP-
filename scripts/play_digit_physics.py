@@ -1,13 +1,13 @@
 """Watch the ALIP walk in MuJoCo's own renderer -- live physics, not playback.
 
-Unlike sim/play_digit.py (which replays a precomputed qpos trajectory with
+Unlike scripts/play_digit.py (which replays a precomputed qpos trajectory with
 mj_forward and no dynamics), this runs the actual closed loop inside the viewer:
 mj_step every tick, torques from the OSC, footsteps planned from measured angular
 momentum. What you see is the controller working, and she can fall.
 
 macOS needs mjpython for the interactive viewer:
     source .venv/bin/activate
-    mjpython sim/play_digit_physics.py --speed 0.5
+    mjpython scripts/play_digit_physics.py --speed 0.5
 
 Keys/mouse are the normal MuJoCo viewer controls. Options:
     --speed S       commanded forward speed [m/s]

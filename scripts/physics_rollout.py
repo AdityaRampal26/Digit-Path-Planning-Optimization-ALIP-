@@ -4,7 +4,7 @@ Right now the only controller that exists is the joint-PD baseline, which does
 not balance -- so this records the fall. It is here so the failure mode is
 visible and so the same harness can replay the OSC once that exists.
 
-Run:  python sim/physics_rollout.py [--seconds 2.5] [--controller pd]
+Run:  python scripts/physics_rollout.py [--seconds 2.5] [--controller pd]
 """
 
 from __future__ import annotations

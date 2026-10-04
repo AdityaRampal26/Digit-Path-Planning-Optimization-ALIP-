@@ -6,8 +6,8 @@ Produces the two artefacts a test audience actually wants:
 
 Results append to out/envelope.json so the sweep can be run in chunks.
 
-    python sim/sweep_envelope.py --grades -30 -25 -22 -15
-    python sim/sweep_envelope.py --plot
+    python scripts/sweep_envelope.py --grades -30 -25 -22 -15
+    python scripts/sweep_envelope.py --plot
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ import numpy as np
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
-sys.path.insert(0, str(ROOT / "sim"))
+sys.path.insert(0, str(ROOT / "scripts"))
 
 import digit_params as dp  # noqa: E402
 import digit_walk  # noqa: E402

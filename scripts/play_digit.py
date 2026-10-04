@@ -5,8 +5,8 @@ forces, no torques, she cannot fall and cannot slip.
 
 macOS needs mjpython for the interactive viewer:
     source .venv/bin/activate
-    python sim/digit_animate.py      # writes out/digit_walk_qpos.npy
-    mjpython sim/play_digit.py
+    python scripts/digit_animate.py      # writes out/digit_walk_qpos.npy
+    mjpython scripts/play_digit.py
 """
 
 from __future__ import annotations
@@ -36,7 +36,7 @@ def main():
     args = ap.parse_args()
 
     if not QPOS.exists():
-        sys.exit(f"{QPOS} not found. Run: python sim/digit_animate.py")
+        sys.exit(f"{QPOS} not found. Run: python scripts/digit_animate.py")
 
     qpos = np.load(QPOS)
     model, data = dp.load(colored=True)

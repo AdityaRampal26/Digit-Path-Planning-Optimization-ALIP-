@@ -6,11 +6,11 @@ as a slope rather than as a level floor.
 
     pip install imageio imageio-ffmpeg
 
-    python sim/record_video.py --all --gif        # flat, +22, -22 as GIFs (half speed)
-    python sim/record_video.py --all --gif --slowmo 3   # slower still
-    python sim/record_video.py --all --gif --slowmo 1   # real time
-    python sim/record_video.py --all              # same, as mp4
-    python sim/record_video.py --all --gif --side # locked side view (slope reads better)
+    python scripts/record_video.py --all --gif        # flat, +22, -22 as GIFs (half speed)
+    python scripts/record_video.py --all --gif --slowmo 3   # slower still
+    python scripts/record_video.py --all --gif --slowmo 1   # real time
+    python scripts/record_video.py --all              # same, as mp4
+    python scripts/record_video.py --all --gif --side # locked side view (slope reads better)
 
 Outputs out/digit_flat.gif, digit_up22.gif, digit_down22.gif (or .mp4 without --gif).
 GIFs are downscaled and frame-dropped, since a full-rate GIF is enormous.
@@ -30,7 +30,7 @@ import numpy as np
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
-sys.path.insert(0, str(ROOT / "sim"))
+sys.path.insert(0, str(ROOT / "scripts"))
 
 from play_digit_ramp import make_ramp_xml, rotate_trajectory  # noqa: E402
 

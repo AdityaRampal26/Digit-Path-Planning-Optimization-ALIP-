@@ -3,13 +3,13 @@
 MuJoCo's own renderer needs a GL context, which is not always available (headless
 boxes, containers without the Mesa libraries). This draws the same motion from
 body and site positions with matplotlib, which is enough to eyeball whether the
-gait is sane. For the real thing, use sim/play_walk.py under mjpython.
+gait is sane. For the real thing, use scripts/play_walk.py under mjpython.
 
 Outputs:
     out/walk_skeleton.gif        animation
     out/walk_filmstrip.png       key frames side by side
 
-Run:  python sim/render_skeleton.py
+Run:  python scripts/render_skeleton.py
 """
 
 from __future__ import annotations

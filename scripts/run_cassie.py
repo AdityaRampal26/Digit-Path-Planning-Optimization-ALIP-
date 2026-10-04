@@ -2,7 +2,7 @@
 
 Usage (macOS requires mjpython, not python, for the interactive viewer):
     source .venv/bin/activate
-    mjpython sim/run_cassie.py
+    mjpython scripts/run_cassie.py
 """
 
 import pathlib
@@ -12,7 +12,7 @@ import mujoco
 import mujoco.viewer
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-MODEL = ROOT / "cassie-mujoco-sim" / "model" / "cassie.xml"
+MODEL = ROOT / "models" / "cassie-mujoco-sim" / "model" / "cassie.xml"
 
 
 def main() -> None:

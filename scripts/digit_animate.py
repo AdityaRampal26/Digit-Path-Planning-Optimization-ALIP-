@@ -10,7 +10,7 @@ solved to put the feet where the planner asked. No contact forces, no torques.
 
 Outputs out/digit_walk_qpos.npy.
 
-Run:  python sim/digit_animate.py
+Run:  python scripts/digit_animate.py
 """
 
 from __future__ import annotations

@@ -8,7 +8,7 @@ __pycache__/
 MUJOCO_LOG.TXT
 
 # Third-party model cloned by setup.sh (not redistributed)
-cassie-mujoco-sim/
+models/cassie-mujoco-sim/
 
 # Generated outputs: trajectories, plots, videos (re-create with the sim/ scripts)
 out/

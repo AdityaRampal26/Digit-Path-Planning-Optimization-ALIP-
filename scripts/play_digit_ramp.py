@@ -22,9 +22,9 @@ and the floor is given `euler="0 -gamma 0"`, whose normal becomes
 
 Usage
 -----
-    python sim/digit_walk.py --seconds 10 --speed 0.4 --slope-deg 22 \
+    python scripts/digit_walk.py --seconds 10 --speed 0.4 --slope-deg 22 \
         --out digit_up22_qpos.npy
-    mjpython sim/play_digit_ramp.py --qpos digit_up22_qpos.npy --slope-deg 22
+    mjpython scripts/play_digit_ramp.py --qpos digit_up22_qpos.npy --slope-deg 22
 
 Downhill is the same with a negative angle.
 """
@@ -47,7 +47,7 @@ import digit_params as dp  # noqa: E402
 
 OUT = ROOT / "out"
 OUT.mkdir(exist_ok=True)
-XML_DIR = ROOT / "digit-model" / "xml"
+XML_DIR = ROOT / "models" / "digit" / "xml"
 DT = 1.0 / 100.0
 TINT_SIDES = False   # set by --tint-sides
 
@@ -125,7 +125,7 @@ def main():
     path = OUT / args.qpos
     if not path.exists():
         sys.exit(f"{path} not found. Generate it with:\n"
-                 f"  python sim/digit_walk.py --seconds 10 --speed 0.4 "
+                 f"  python scripts/digit_walk.py --seconds 10 --speed 0.4 "
                  f"--slope-deg {args.slope_deg} --out {args.qpos}")
 
     qpos = rotate_trajectory(np.load(path), args.slope_deg)

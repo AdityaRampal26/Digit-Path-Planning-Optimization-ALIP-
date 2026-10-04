@@ -26,7 +26,7 @@ import mujoco
 import numpy as np
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-MODEL_PATH = ROOT / "digit-model" / "xml" / "digit_patched.xml"
+MODEL_PATH = ROOT / "models" / "digit" / "xml" / "digit_patched.xml"
 
 SIDES = ("left", "right")
 
@@ -365,7 +365,7 @@ def alip_params(T: float = 0.35, qpos=None):
 # Nominal standing pose
 # ---------------------------------------------------------------------------
 
-_NOMINAL_CACHE = ROOT / "digit-model" / "nominal_qpos.npy"
+_NOMINAL_CACHE = ROOT / "models" / "digit" / "nominal_qpos.npy"
 
 
 def nominal_pose(model, data, feet: FootGeometry | None = None,
@@ -378,7 +378,7 @@ def nominal_pose(model, data, feet: FootGeometry | None = None,
     targets walked gradually to the desired standing positions -- a homotopy,
     which avoids needing a good initial guess.
 
-    Cached to digit-model/nominal_qpos.npy since it is deterministic.
+    Cached to models/digit/nominal_qpos.npy since it is deterministic.
     """
     if _NOMINAL_CACHE.exists() and not recompute:
         return np.load(_NOMINAL_CACHE)

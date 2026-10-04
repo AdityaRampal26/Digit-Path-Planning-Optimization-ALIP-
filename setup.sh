@@ -6,8 +6,8 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 # 1. Clone the OSU DRL repo (we use its MJCF model, not its C build system)
-if [ ! -d cassie-mujoco-sim ]; then
-  git clone https://github.com/osudrl/cassie-mujoco-sim.git
+if [ ! -d models/cassie-mujoco-sim ]; then
+  git clone https://github.com/osudrl/cassie-mujoco-sim.git models/cassie-mujoco-sim
 else
   echo "cassie-mujoco-sim already present, skipping clone"
 fi
@@ -27,15 +27,15 @@ echo
 echo "Done. Activate first:  source .venv/bin/activate"
 echo
 echo "Digit (current work):"
-echo "  mjpython sim/play_digit_physics.py --speed 0.5   # live closed-loop ALIP walk"
-echo "  python   sim/digit_walk.py --seconds 20 --speed 0.5   # headless, with metrics"
-echo "  python   sim/digit_stand.py --seconds 30 --push 120   # standing + push recovery"
-echo "  python   sim/record_video.py --all --gif                 # GIFs (flat, +22, -22)"
+echo "  mjpython scripts/play_digit_physics.py --speed 0.5   # live closed-loop ALIP walk"
+echo "  python   scripts/digit_walk.py --seconds 20 --speed 0.5   # headless, with metrics"
+echo "  python   scripts/digit_stand.py --seconds 30 --push 120   # standing + push recovery"
+echo "  python   scripts/record_video.py --all --gif                 # GIFs (flat, +22, -22)"
 echo
 echo "Cassie (earlier stage, kinematic only):"
-echo "  python   sim/alip_animate.py && mjpython sim/play_walk.py"
+echo "  python   scripts/alip_animate.py && mjpython scripts/play_walk.py"
 echo
 echo "Tests:"
-echo "  for t in tests/test_*.py; do python \$t; done"
+echo "  python -m pytest tests -q"
 echo
 echo "Note: mjpython (not python) is required for the interactive viewer on macOS."

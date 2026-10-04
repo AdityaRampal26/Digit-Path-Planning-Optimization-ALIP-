@@ -14,7 +14,7 @@ to the hardware.
 
 Used by the playback scripts; can also be run directly to write a coloured model:
 
-    python src/digit_visual.py            # -> digit-model/xml/digit_colored.xml
+    python src/digit_visual.py            # -> models/digit/xml/digit_colored.xml
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ import pathlib
 import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-XML_DIR = ROOT / "digit-model" / "xml"
+XML_DIR = ROOT / "models" / "digit" / "xml"
 
 # Agility Digit's actual livery.
 #   torso / primary body   teal    #1e5d88  = (30, 93, 136)/255

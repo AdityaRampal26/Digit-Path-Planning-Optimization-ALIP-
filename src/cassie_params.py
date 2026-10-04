@@ -16,7 +16,7 @@ import mujoco
 import numpy as np
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-MODEL_PATH = ROOT / "cassie-mujoco-sim" / "model" / "cassie.xml"
+MODEL_PATH = ROOT / "models" / "cassie-mujoco-sim" / "model" / "cassie.xml"
 
 # Floating base: 3 slide joints (x, y, z) then a ball joint (quaternion).
 QPOS_PELVIS_POS = slice(0, 3)

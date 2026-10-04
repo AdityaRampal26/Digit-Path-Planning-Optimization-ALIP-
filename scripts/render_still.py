@@ -10,7 +10,7 @@ them with matplotlib.
 splat fine and read as solid geometry at slide resolution.
 
 Usage:
-    python sim/render_still.py --qpos digit_stageC_up22_qpos.npy --slope-deg 22 \
+    python scripts/render_still.py --qpos digit_stageC_up22_qpos.npy --slope-deg 22 \
         --frame 0.6 --out out/still_up22.png
 """
 
@@ -25,7 +25,7 @@ import numpy as np
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
-sys.path.insert(0, str(ROOT / "sim"))
+sys.path.insert(0, str(ROOT / "scripts"))
 
 import digit_params as dp  # noqa: E402
 

@@ -23,7 +23,7 @@ SOFTWARE.
 -------------------------------------------------------------------------------
 Third-party assets
 
-The Digit simulation model and meshes in digit-model/ depict Agility Robotics'
+The Digit simulation model and meshes in models/digit/ depict Agility Robotics'
 Digit humanoid and remain subject to their original terms. The Cassie model
 (osudrl/cassie-mujoco-sim) is fetched by setup.sh and is not redistributed here.
 The MIT license above covers only the code and documentation written for this

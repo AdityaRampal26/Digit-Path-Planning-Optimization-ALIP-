@@ -9,7 +9,7 @@ Commanded gait: walk in place for 6 steps, ramp to 0.5 m/s over 4 steps, hold.
 
 Run:
     source .venv/bin/activate
-    python sim/alip_pointmass.py
+    python scripts/alip_pointmass.py
 """
 
 from __future__ import annotations

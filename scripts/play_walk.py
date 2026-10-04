@@ -6,7 +6,7 @@ where the planner put them. Contact forces come in the next stage.
 
 macOS needs mjpython for the interactive viewer:
     source .venv/bin/activate
-    mjpython sim/play_walk.py
+    mjpython scripts/play_walk.py
 
 Options:
     --loop N     repeat the trajectory N times (default 3)
@@ -27,7 +27,7 @@ import numpy as np
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
-MODEL = ROOT / "cassie-mujoco-sim" / "model" / "cassie.xml"
+MODEL = ROOT / "models" / "cassie-mujoco-sim" / "model" / "cassie.xml"
 QPOS = ROOT / "out" / "walk_qpos.npy"
 DT = 1.0 / 100.0
 
@@ -39,7 +39,7 @@ def main():
     args = ap.parse_args()
 
     if not QPOS.exists():
-        sys.exit(f"{QPOS} not found. Run: python sim/alip_animate.py")
+        sys.exit(f"{QPOS} not found. Run: python scripts/alip_animate.py")
 
     qpos = np.load(QPOS)
     model = mujoco.MjModel.from_xml_path(str(MODEL))

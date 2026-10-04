@@ -11,7 +11,7 @@ MuJoCo reports **zero contacts** -- tangent geoms generate no force. The robot i
 therefore started a fraction of a millimetre low so contacts exist on the first
 tick; the closed loop then settles to whatever penetration balances body weight.
 
-Run:  python sim/digit_stand.py [--seconds 30] [--push 150]
+Run:  python scripts/digit_stand.py [--seconds 30] [--push 150]
 """
 
 from __future__ import annotations

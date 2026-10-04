@@ -3,7 +3,7 @@
 Nothing here is precomputed. Every tick the controller measures angular momentum
 about the stance contact point, plans a footstep, and steers the swing foot at it.
 
-Run:  python sim/digit_walk.py [--seconds 6] [--speed 0.4]
+Run:  python scripts/digit_walk.py [--seconds 6] [--speed 0.4]
 """
 
 from __future__ import annotations

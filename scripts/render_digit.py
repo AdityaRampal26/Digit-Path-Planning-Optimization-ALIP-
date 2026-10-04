@@ -1,6 +1,6 @@
 """Render a Digit trajectory as a skeleton animation, without needing OpenGL.
 
-Same idea as sim/render_skeleton.py but for Digit's kinematic tree, and it draws
+Same idea as scripts/render_skeleton.py but for Digit's kinematic tree, and it draws
 the arms as well as the legs. Foot outlines come from the calibrated sole corners,
 so the box foot is drawn as an actual footprint rather than Cassie's line blade.
 
@@ -9,7 +9,7 @@ Outputs (prefix set by --name):
     out/<name>_overlay.png
     out/<name>_footprints.png
 
-Run:  python sim/render_digit.py [--qpos digit_walk_qpos.npy] [--name digit_walk]
+Run:  python scripts/render_digit.py [--qpos digit_walk_qpos.npy] [--name digit_walk]
 """
 
 from __future__ import annotations

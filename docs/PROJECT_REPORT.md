@@ -42,7 +42,7 @@ I ran joint PD holding the nominal pose under real physics. The diagnosis matter
     ground reaction          327 N      (= body weight, 327 N)
     pelvis height            1.010 -> 0.168 m over 1.6 s
 
-<p align="center"><img src="../media/pd_fall_overlay.png" alt="Joint PD topples" width="800"/></p>
+<p align="center"><img src="../images/pd_fall_overlay.png" alt="Joint PD topples" width="800"/></p>
 
 *Joint PD, real physics. The legs hold the same shape in every pose — this is pure toppling, not buckling. The CoM traces a clean arc from 0.88 m to 0.17 m, travelling 1.1 m horizontally before landing face-down.*
 
@@ -162,13 +162,13 @@ Laterally the target must alternate, or the robot topples sideways or walks its 
 y(0) = -\frac{W}{2}, \qquad L_x^{des} = +\tfrac12 mH\omega W\tanh(\omega T/2)
 ```
 
-<p align="center"><img src="../media/alip_pointmass_footsteps.png" alt="Point-mass ALIP gait" width="800"/></p>
+<p align="center"><img src="../images/alip_pointmass_footsteps.png" alt="Point-mass ALIP gait" width="800"/></p>
 
 *Stage 1: the planner validated on a point mass before touching the robot. Commanded 0.500 m/s, measured 0.500. Step width 0.2699 m against a nominal 0.27. Lateral drift at machine precision (6e-16). Tight cluster on the left is walking in place; even spacing is cruise.*
 
 ### 4.4 Result
 
-<p align="center"><img src="../media/digit_walk_long_footprints.png" alt="57 steps flat" width="800"/></p>
+<p align="center"><img src="../images/digit_walk_long_footprints.png" alt="57 steps flat" width="800"/></p>
 
 *57 steps, 9.04 m, commanded 0.500 m/s and measured 0.499. Footprints are real support polygons — the box foot — with the CoM weaving between them.*
 
@@ -232,11 +232,11 @@ Note the two approaches take *opposite* forks on the central design question. St
 
 ### 5.3 Results
 
-<p align="center"><img src="../media/stageC_up22_overlay.png" alt="Uphill 22 degrees" width="800"/></p>
+<p align="center"><img src="../images/stageC_up22_overlay.png" alt="Uphill 22 degrees" width="800"/></p>
 
 *+22° (40% grade): 33 steps, 3.79 m along the slope, **1.42 m of vertical climb**, tracking 0.402 m/s against 0.400 commanded.*
 
-<p align="center"><img src="../media/stageC_down22_overlay.png" alt="Downhill 22 degrees" width="800"/></p>
+<p align="center"><img src="../images/stageC_down22_overlay.png" alt="Downhill 22 degrees" width="800"/></p>
 
 *−22°: 31 steps, 2.99 m, 1.12 m descent. 39% of steps register as _late_ touchdown — the downhill signature.*
 
@@ -283,7 +283,7 @@ Every layer was checked against an independent oracle before anything was built 
 | Angular momentum                                 | hand-rolled sum over all 38 bodies        | 1e-8                         |
 | Push recovery                                    | capture-point bound $\xi = x + v/\omega$             | 65% of theory, CoP saturated |
 
-<p align="center"><img src="../media/digit_walk_long_overlay.png" alt="Flat walking world frame" width="800"/></p>
+<p align="center"><img src="../images/digit_walk_long_overlay.png" alt="Flat walking world frame" width="800"/></p>
 
 *Flat ground, world frame. CoM held to ±4 mm over 9 m of travel.*
 

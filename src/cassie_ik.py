@@ -60,7 +60,7 @@ class CassieIK:
         regularisation: float = 1e-7,
     ):
         if model_path is None:
-            model_path = ROOT / "cassie-mujoco-sim" / "model" / "cassie.xml"
+            model_path = ROOT / "models" / "cassie-mujoco-sim" / "model" / "cassie.xml"
         self.model = mujoco.MjModel.from_xml_path(str(model_path))
         self.model.opt.jacobian = mujoco.mjtJacobian.mjJAC_DENSE
         self.model.opt.disableflags |= mujoco.mjtDisableBit.mjDSBL_CONTACT
