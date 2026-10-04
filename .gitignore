@@ -1,0 +1,16 @@
+# Python / env
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+MUJOCO_LOG.TXT
+
+# Third-party model cloned by setup.sh (not redistributed)
+cassie-mujoco-sim/
+
+# Generated outputs: trajectories, plots, videos (re-create with the sim/ scripts)
+out/
+
+_to_delete/
