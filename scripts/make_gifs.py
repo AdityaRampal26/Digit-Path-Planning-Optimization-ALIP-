@@ -5,7 +5,11 @@
     python scripts/make_gifs.py compare    # just ALIP vs no ALIP
 
 Writes images/anim_*_light.gif and images/anim_*_dark.gif (GitHub shows the one
-that matches the viewer's theme). Edit THEMES to change colours.
+that matches the viewer's theme), plus images/mujoco_*.gif: the same runs rendered
+in MuJoCo. Edit THEMES to change the 2D colours.
+
+MuJoCo rendering needs OpenGL. On a headless Linux box, install OSMesa
+(apt install libosmesa6) and run with MUJOCO_GL=osmesa.
 """
 
 from __future__ import annotations
@@ -129,7 +133,7 @@ def simulate(seconds, speed, slope_deg=0.0, blind=False, ramp_after=0.5, ramp_ti
         osc.act.apply_torque(data, tau)
 
         if i % every == 0:
-            f = dict(t=t, com=np.array(data.subtree_com[0]),
+            f = dict(t=t, qpos=data.qpos.copy(), com=np.array(data.subtree_com[0]),
                      torso=np.array(data.xpos[torso]),
                      torso_up=np.array(data.xmat[torso]).reshape(3, 3)[:, 2])
             for s in dp.SIDES:
@@ -291,6 +295,101 @@ def gif_compare(with_alip, without, theme):
     plt.close(fig)
 
 
+# ---------------------------------------------------------------------------
+# MuJoCo renders of the same runs
+# ---------------------------------------------------------------------------
+
+def mujoco_clip(run, width, height, distance=3.0, title="", note_fn=None):
+    """Render a run with the real Digit model on a real (tilted) floor, side view."""
+    from PIL import Image, ImageDraw, ImageFont
+    from play_digit_ramp import make_ramp_xml, rotate_trajectory
+
+    deg = run["slope"]
+    model = mujoco.MjModel.from_xml_path(str(make_ramp_xml(deg)))
+    data = mujoco.MjData(model)
+    qpos = np.array([f["qpos"] for f in run["frames"]])
+    if deg:
+        qpos = rotate_trajectory(qpos, deg)
+    torso = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "torso")
+
+    cam = mujoco.MjvCamera()
+    mujoco.mjv_defaultCamera(cam)
+    cam.type = mujoco.mjtCamera.mjCAMERA_FREE
+    cam.distance, cam.elevation, cam.azimuth = distance, -6.0, 90.0
+    opt = mujoco.MjvOption()
+    mujoco.mjv_defaultOption(opt)
+
+    try:
+        font = ImageFont.truetype("DejaVuSans-Bold.ttf", 17)
+        small = ImageFont.truetype("DejaVuSansMono.ttf", 14)
+    except OSError:
+        font = small = ImageFont.load_default()
+
+    out, x_cam = [], None
+    tan = np.tan(np.radians(deg))
+    with mujoco.Renderer(model, height, width) as r:
+        for f, q in zip(run["frames"], qpos):
+            data.qpos[:] = q
+            data.qvel[:] = 0.0
+            mujoco.mj_forward(model, data)
+            x = float(data.xpos[torso][0])
+            x_cam = x if x_cam is None else 0.85 * x_cam + 0.15 * x
+            # follow along the ground; the camera height never drops with a fall
+            cam.lookat[:] = [x_cam, 0.0, x_cam * tan + 0.75]
+            r.update_scene(data, camera=cam, scene_option=opt)
+            im = Image.fromarray(r.render())
+            d = ImageDraw.Draw(im)
+            if title:
+                d.text((12, 10), title, font=font, fill="white", stroke_width=3,
+                       stroke_fill="black")
+            d.text((width - 12, 12), f"t = {f['t']:.1f} s", font=small, fill="white",
+                   anchor="ra", stroke_width=2, stroke_fill="black")
+            if note_fn:
+                note = note_fn(f)
+                if note:
+                    d.text((12, 36), note[0], font=font, fill=note[1], stroke_width=3,
+                           stroke_fill="black")
+            out.append(im)
+    return out
+
+
+def _write_gif(panels, name, start=0):
+    """Place clips side by side and write one GIF."""
+    from PIL import Image
+
+    n = min(len(p) for p in panels) - start
+    w = sum(p[0].width for p in panels) + 4 * (len(panels) - 1)
+    h = panels[0][0].height
+    frames = []
+    for i in range(n):
+        canvas = Image.new("RGB", (w, h), "#0D1117")
+        x = 0
+        for p in panels:
+            canvas.paste(p[start + i], (x, 0))
+            x += p[0].width + 4
+        frames.append(canvas.quantize(colors=200, method=Image.Quantize.MEDIANCUT))
+    path = IMG / f"{name}.gif"
+    frames[0].save(path, save_all=True, append_images=frames[1:], duration=1000 / FPS,
+                   loop=0, optimize=True)
+    print(f"wrote {path.relative_to(ROOT)}  ({path.stat().st_size / 1e6:.1f} MB)")
+
+
+def mujoco_terrains(runs):
+    titles = ["Flat ground", "22° uphill", "22° downhill"]
+    panels = [mujoco_clip(r, 300, 300, title=t) for r, t in zip(runs, titles)]
+    _write_gif(panels, "mujoco_terrains", start=int(1.5 * FPS))
+
+
+def mujoco_compare(with_alip, without):
+    fell = without["fell_at"]
+    a = mujoco_clip(with_alip, 440, 330, title="With ALIP",
+                    note_fn=lambda f: ("walking", "#56D364"))
+    b = mujoco_clip(without, 440, 330, title="Without ALIP",
+                    note_fn=lambda f: ("fell over", "#F85149")
+                    if fell is not None and f["t"] >= fell else None)
+    _write_gif([a, b], "mujoco_alip_vs_none")
+
+
 def main(which):
     import matplotlib
     matplotlib.use("Agg")
@@ -300,6 +399,7 @@ def main(which):
         runs = [simulate(7.5, 0.4, s) for s in (0.0, 22.0, -22.0)]
         for th in THEMES:
             gif_terrains(runs, th)
+        mujoco_terrains(runs)
     if "compare" in which:
         print("simulating ALIP vs no ALIP ...", flush=True)
         a = simulate(4.0, 0.4, 0.0, blind=False)
@@ -307,6 +407,7 @@ def main(which):
         print(f"  no ALIP fell at t={b['fell_at']}")
         for th in THEMES:
             gif_compare(a, b, th)
+        mujoco_compare(a, b)
 
 
 if __name__ == "__main__":
