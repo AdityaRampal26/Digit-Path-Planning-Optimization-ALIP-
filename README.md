@@ -15,16 +15,53 @@
 
 </div>
 
-## Overview
+## What is this?
 
-This project makes Agility Robotics' **Digit** humanoid walk in simulation, closed loop, with nothing pre-recorded. Every step is decided in real time from the robot's measured state.
+[Digit](https://agilityrobotics.com) is a human-sized, two-legged robot built by Agility Robotics. This project teaches a simulated Digit to walk on its own, in the MuJoCo physics simulator.
 
-The controller has two layers:
+Walking on two legs is hard because a biped is always falling. Its body sits high above two small feet, so the slightest lean grows into a fall unless the robot catches itself. People do this without thinking: when you start to tip forward, you put a foot out in front of you. **The whole trick of walking is choosing where to put the next foot.**
 
-- **Where to step: the ALIP planner.** It treats the robot as an inverted pendulum and tracks its angular momentum about the stance foot. From that, it computes in closed form the footstep that keeps the robot balanced one step later.
-- **How to move: a whole-body QP.** At 500 Hz, it solves for every joint torque so the body follows the plan while respecting real physics: the feet can only push, friction has limits, and the motors have torque limits.
+Nothing in the simulation is pre-recorded. Every footstep is decided while the robot is moving, from what its sensors measure in that moment.
 
-I extended the planner from flat ground to slopes with one small change to the math, without adding a heavier optimizer.
+## Why ALIP? What happens without it
+
+**ALIP** (Angular-momentum Linear Inverted Pendulum) is a simple model of a walking robot: a single heavy point balanced on a stick, pivoting on the foot that's on the ground. From how fast the robot is rotating about that foot, ALIP predicts where the body will be at the end of the step. From that prediction, it calculates exactly where the next foot must land so the robot stays balanced one step later.
+
+Both robots below run the same body controller and get the same speed command. The only difference is who picks the footsteps:
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/anim_alip_vs_none_dark.gif">
+    <img src="images/anim_alip_vs_none_light.gif" width="880" alt="Left: Digit with ALIP keeps walking. Right: Digit with fixed footsteps falls over after about one second">
+  </picture>
+</p>
+
+- **With ALIP (left):** each step lands where the planner says, so small wobbles get corrected on the next step.
+- **Without ALIP (right):** the foot always lands one fixed stride ahead, whatever the body is doing. The first small wobble isn't corrected, it grows, and Digit falls over about 1 second in, after 3 steps.
+
+## How it walks
+
+Two layers work together, many times a second:
+
+1. **Where to step: the ALIP planner.** It reads the robot's measured state, predicts where the body is heading, and picks the next footstep. It re-plans continuously during each step, so a push or stumble moves the target in real time.
+2. **How to move: a whole-body controller.** 500 times a second, it solves an optimization problem (a QP) for the motor torque at every joint. The goal is to swing the free foot to the planned spot and keep the torso upright, without breaking real physics: feet can only push on the ground, not pull; the feet can't slip past their friction limit; and every motor has a maximum torque.
+
+```
+ measured state ─► ALIP planner ─► swing-foot targets ─► whole-body QP ─► joint torques ─► Digit (MuJoCo)
+      ▲                (where to step)                     (how to move)                        │
+      └─────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Slopes.** The original ALIP math assumes flat ground. On a hill, gravity also pulls the robot along the slope, so I added that pull into the model as a constant extra torque. That one change lets the same planner walk up and down 22° grades, with no heavier optimizer needed.
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/anim_terrains_dark.gif">
+    <img src="images/anim_terrains_light.gif" width="900" alt="2D side view of Digit walking on flat ground, 22 degrees uphill and 22 degrees downhill">
+  </picture>
+</p>
+
+*2D side view, drawn from the simulation. Orange = left leg, blue = right leg, dot = center of mass. Notice Digit leaning into the hill on the uphill run.*
 
 ## Results
 
@@ -38,33 +75,64 @@ I extended the planner from flat ground to slopes with one small change to the m
 
 <p align="center"><img src="images/digit_walk_long_footprints.png" width="900" alt="Footprints of 57 steps with the center-of-mass path weaving between them"/></p>
 
-**Why foot placement matters.** A plain joint controller holds every joint almost perfectly, and the robot still topples over, because nothing is balancing the body over the feet. This project is built around fixing that.
+*Top-down view of a 57-step walk. Each box is where a foot landed; the black line is the body swaying from foot to foot.*
 
-<p align="center"><img src="images/pd_fall_overlay.png" width="650" alt="Joint PD baseline toppling over"/></p>
+## What's in the repo
 
-## How it works
+### `models/`: the robot
 
-```
- measured state ─► ALIP planner ─► swing-foot targets ─► whole-body QP ─► joint torques ─► Digit (MuJoCo)
-      ▲                (where to step)                     (how to move)                        │
-      └─────────────────────────────────────────────────────────────────────────────────────────┘
-```
+| File | What it is |
+|---|---|
+| `digit/xml/digit_patched.xml` | The Digit model the controller loads: every body, joint, motor, mass and collision shape, in MuJoCo's XML format (MJCF) |
+| `digit/xml/digit.xml` | The original model file it was made from |
+| `digit/xml/digit_colored.xml` | Same robot with a cleaner color scheme, for videos (made by `src/digit_visual.py`) |
+| `digit/xml/digit_ramp_*.xml` | Digit placed on a real tilted ramp (−22°, 0°, +22°, +50°), for the slope videos |
+| `digit/xml/meshes/` | 28 3D part shapes (`.stl`): shins, hips, feet, arms |
+| `digit/nominal_qpos.npy` | The saved standing pose every run starts from |
 
-- **The planner is robot-agnostic.** The same planner code drove both Cassie and Digit unchanged.
-- **Every layer is tested against an independent check:** the math against numerical integration, the dynamics against MuJoCo, and the IK on a fresh model. There are 88 tests in total.
+The model has 50 degrees of freedom and 26 actuators. Its feet are real boxes, about 8 × 23.5 cm.
 
-The full write-up, with derivations, the bugs that mattered, and the limitations, is in [docs/PROJECT_REPORT.md](docs/PROJECT_REPORT.md).
+### `src/`: the controller
 
-## Project structure
+| File | What it does |
+|---|---|
+| `alip.py` | The ALIP model and footstep math, including the slope extension |
+| `walk_controller.py` | The walking loop: plans each step, swings the foot, detects touchdown, switches legs |
+| `osc.py` | The whole-body controller: the QP that turns goals into joint torques |
+| `dynamics.py` | Pulls the robot's equations of motion out of MuJoCo for the QP |
+| `digit_params.py` | Digit's measurements: mass, foot shape, motor limits, standing pose |
+| `digit_state.py` | Works out the ALIP state from the full simulation, and senses which foot is on the ground |
+| `digit_ik.py` | Inverse kinematics: finds joint angles that put a foot at a given spot |
+| `digit_visual.py` | Recolors the model for nicer videos |
+| `gait.py` | Turns an ALIP plan into a full-body reference motion, used for the pre-planned playbacks |
+| `cassie_*.py` | The earlier stage of the project, on Agility's Cassie robot |
 
-```
-├── src/        controller: ALIP planner, whole-body QP, IK, state estimation
-├── scripts/    runnable experiments: walking, standing, slopes, rendering
-├── models/     Digit robot model (MJCF + meshes)
-├── images/     GIFs and plots
-├── tests/      88 tests
-└── docs/       project report
-```
+### `scripts/`: things you can run
+
+| Script | What it does |
+|---|---|
+| **Watch it** | |
+| `play_digit_physics.py` | Opens the MuJoCo viewer and lets you watch Digit walk live |
+| `play_digit_ramp.py` | Same, on a real tilted ramp |
+| **Experiments** | |
+| `digit_stand.py` | Can Digit just stand? Includes a push test |
+| `digit_one_leg.py` | Can it balance on one leg? |
+| `digit_walk.py` | Runs a walk with no window and prints speed, height, tilt and torque stats |
+| `sweep_envelope.py` | Tries a range of slopes and scores each run pass or fail |
+| `tune_touchdown.py` | Tunes how hard a foot must press before it counts as landed |
+| **Make the visuals** | |
+| `record_video.py` | Records the MuJoCo GIFs at the top of this page |
+| `make_gifs.py` | Draws the 2D side-view animations on this page |
+| `render_digit.py`, `render_still.py`, `render_skeleton.py` | Stills and stick-figure renders, no GPU needed |
+| **Earlier stages** | |
+| `alip_pointmass.py` | ALIP on a single point mass: the idea with no robot attached |
+| `run_cassie.py`, `physics_rollout.py`, `play_walk.py`, `alip_animate.py` | The Cassie stage |
+| `digit_animate.py`, `play_digit.py` | Pre-planned (not live) Digit walk playback |
+
+### Also
+
+- `tests/`: 88 tests. Each layer is checked against something independent: the math against numerical integration, the dynamics against MuJoCo, and the IK on a fresh model.
+- `docs/PROJECT_REPORT.md`: the full write-up, with derivations, the bugs that mattered, and the limitations.
 
 ## Run it
 
@@ -72,7 +140,22 @@ The full write-up, with derivations, the bugs that mattered, and the limitations
 bash setup.sh && source .venv/bin/activate
 mjpython scripts/play_digit_physics.py --speed 0.5     # watch it walk (Linux: python)
 python -m pytest tests -q                               # run the tests
+python scripts/make_gifs.py                             # redraw the 2D animations
 ```
+
+<details>
+<summary><b>Glossary</b> (for anyone new to legged robots)</summary>
+
+- **Biped:** a robot that walks on two legs.
+- **Stance foot / swing foot:** the foot on the ground, and the one moving through the air.
+- **Center of mass (CoM):** the robot's average position, weighted by mass. Balance is about keeping it under control.
+- **Inverted pendulum:** a weight balanced on top of a stick, like balancing a broom on your hand. A walking robot behaves a lot like one.
+- **Angular momentum:** how much rotation the body has about the stance foot. ALIP uses it because it is smooth and easy to predict.
+- **QP (quadratic program):** a kind of optimization problem that can be solved very fast, here hundreds of times a second.
+- **Inverse kinematics (IK):** working backwards from "put the foot here" to the joint angles that do it.
+- **MuJoCo:** the physics simulator that plays the role of the real world.
+
+</details>
 
 ## Credits
 
