@@ -32,15 +32,28 @@ I extended the planner from flat ground to slopes with one small change to the m
 |---|---|
 | Flat ground | **57 steps / 9 m** without falling, commanded 0.50 m/s, measured 0.499 m/s |
 | Stability | body height held to ±4 mm, torso tilt under 0.52° |
-| Uphill | walks up **22°** (a 40% grade), 1.42 m of vertical climb |
-| Downhill | walks down **22°** |
-| Limits | falls at +25° (knees max out), speeds up uncontrollably at −30° (can't brake) |
+| Clean slope range | passes every check from **−18° to +18°** |
+| Uphill | keeps walking up **22°** (a 40% grade), 1.42 m of vertical climb |
+| Downhill | keeps walking down **22°**, but slows to about 0.25 m/s instead of 0.4 |
+| Limits | falls at +25° (knees and hips hit their torque limits), speeds up and falls at −30° (can't brake) |
 
-<p align="center"><img src="images/digit_walk_long_footprints.png" width="900" alt="Footprints of 57 steps with the center-of-mass path weaving between them"/></p>
+<p align="center"><img src="images/fig_envelope.png" width="900" alt="Measured speed versus slope from -30 to +25 degrees, with pass, partial and fall outcomes"/></p>
 
-**Why foot placement matters.** A plain joint controller holds every joint almost perfectly, and the robot still topples over, because nothing is balancing the body over the feet. This project is built around fixing that.
+**Why it stops at +22°.** By +22° the knees and hips are already at 100% of their motor torque, so there is no headroom left for a steeper grade.
 
-<p align="center"><img src="images/pd_fall_overlay.png" width="650" alt="Joint PD baseline toppling over"/></p>
+<p align="center"><img src="images/fig_torque.png" width="900" alt="Peak torque per joint as a percent of the motor limit on flat, +22, -22 and +25 degrees"/></p>
+
+<p align="center"><img src="images/fig_slopes.png" width="900" alt="Side view of Digit walking on flat ground, 22 degrees uphill and 22 degrees downhill"/></p>
+
+**Flat ground, 20 s.** Speed tracks the command once the ramp finishes; height and tilt barely move.
+
+<p align="center"><img src="images/fig_telemetry.png" width="900" alt="Commanded vs measured speed, CoM height change and torso tilt over 20 seconds"/></p>
+
+<p align="center"><img src="images/fig_footsteps.png" width="900" alt="Top-down foot placements and step length and width per step"/></p>
+
+**Why foot placement matters.** In the earlier Cassie stage, a plain joint PD controller held every joint within 2.5° and the robot still fell, because nothing was balancing the body over the feet. This project is built around fixing that.
+
+<p align="center"><img src="images/fig_baseline.png" width="900" alt="CoM height over time: Digit with ALIP stays level, Cassie with joint PD falls"/></p>
 
 ## How it works
 
@@ -72,6 +85,7 @@ The full write-up, with derivations, the bugs that mattered, and the limitations
 bash setup.sh && source .venv/bin/activate
 mjpython scripts/play_digit_physics.py --speed 0.5     # watch it walk (Linux: python)
 python -m pytest tests -q                               # run the tests
+python scripts/make_figures.py --collect                # rerun the sims and redraw every figure above
 ```
 
 ## Credits
