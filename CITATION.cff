@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this controller in your work, please cite it as below."
+type: software
+title: "ALIP Walking Control for Digit: an angular-momentum footstep planner and whole-body QP controller for bipedal walking on slopes in MuJoCo"
+authors:
+  - family-names: Rampal
+    given-names: Aditya
+repository-code: "https://github.com/AdityaRampal26/Digit-Path-Planning-Optimization-ALIP-"
+url: "https://github.com/AdityaRampal26/Digit-Path-Planning-Optimization-ALIP-"
+license: MIT
+date-released: "2026-10-17"
+keywords:
+  - mujoco
+  - bipedal-locomotion
+  - humanoid
+  - alip
+  - legged-robots
+  - control-systems
+references:
+  - type: conference-paper
+    title: "One-Step Ahead Prediction of Angular Momentum about the Contact Point for Control of Bipedal Locomotion: Validation in a LIP-inspired Controller"
+    authors:
+      - family-names: Gong
+        given-names: Yukai
+      - family-names: Grizzle
+        given-names: Jessy
+    collection-title: "IEEE International Conference on Robotics and Automation (ICRA)"
+    year: 2021

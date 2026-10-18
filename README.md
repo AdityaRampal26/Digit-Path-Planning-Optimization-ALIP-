@@ -118,6 +118,19 @@ python scripts/make_gifs.py                             # redraw the 2D animatio
 
 </details>
 
+## Citation
+
+If you use this controller in your work, please cite it:
+
+```bibtex
+@software(rampal2026alipdigit,
+  author = {Rampal, Aditya},
+  title = {{ALIP Walking Control for Digit: an angular-momentum footstep planner and whole-body QP controller for bipedal walking on slopes in MuJoCo}},
+  url = {https://github.com/AdityaRampal26/Digit-Path-Planning-Optimization-ALIP-},
+  year = {2026},
+}
+```
+
 ## Credits
 
 - ALIP model: Y. Gong & J. Grizzle, *"One-Step Ahead Prediction of Angular Momentum about the Contact Point for Control of Bipedal Locomotion,"* ICRA 2021
